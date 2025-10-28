@@ -117,3 +117,60 @@ def test_custom_error_message_is_email_domain():
     v = Validator("user@gmail.com").is_email(required_domain="corp.com", message=custom_msg)
     assert v.is_valid() is False
     assert v.get_errors() == [custom_msg]
+
+# --- 4. Тести з доменами та кодами країн ---
+
+def test_is_phone_with_specific_country_code_pass():
+    """Тест: валідний номер з вказаним кодом країни (+48)"""
+     v = Validator("+48123456789").is_phone(country_code="+48")
+    assert v.is_valid() is True
+
+def test_is_phone_with_specific_country_code_fail():
+    """Тест: невалідний номер (інший код)"""
+    v = Validator("+1123456789").is_phone(country_code="+48")
+    assert v.is_valid() is False
+    assert "must start with +48" in v.get_errors()[0]
+
+def test_is_phone_with_specific_code_fail_digits():
+    """Тест: код правильний, але далі літери"""
+    v = Validator("+380testtest").is_phone(country_code="+380")
+    assert v.is_valid() is False
+    assert "must start with +380" in v.get_errors()[0]
+
+def test_is_phone_generic_pass():
+    """Тест: валідний номер (загальний формат) без вказання коду"""
+    v = Validator("+1234567890123").is_phone()  # No country code
+    assert v.is_valid() is True
+
+def test_is_phone_generic_fail_no_plus():
+    """Тест: невалідний номер (загальний формат) - немає '+'"""
+    v = Validator("123456789").is_phone()  # No country code
+    assert v.is_valid() is False
+    assert "Invalid phone format" in v.get_errors()[0]
+
+def test_is_email_with_required_domain_pass():
+    """Тест: валідний email з правильним доменом"""
+    v = Validator("user@mycompany.com").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is True
+
+def test_is_email_with_required_domain_fail():
+    """Тест: валідний email, але невірний домен"""
+    v = Validator("user@other.com").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is False
+    assert "must be from domain @mycompany.com" in v.get_errors()[0]
+
+ def test_is_email_with_required_domain_case_insensitive():
+    """Тест: перевірка домену нечутлива до регістру"""
+    v = Validator("user@MYCOMPANY.COM").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is True
+        
+    v2 = Validator("user@mycompany.com").is_email(required_domain="MYCOMPANY.COM")
+    assert v2.is_valid() is True
+
+def test_is_email_required_domain_but_invalid_format():
+    """Тест: email невалідний, перевірка домену не має спрацювати"""
+    v = Validator("usermycompany.com").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is False
+    # Має бути ТІЛЬКИ одна помилка - про невірний формат
+    assert len(v.get_errors()) == 1
+    assert "Invalid email format" in v.get_errors()[0]
