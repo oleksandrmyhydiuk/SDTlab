@@ -1,5 +1,7 @@
 import pytest
-from validator_v2 import Validator
+from validator import Validator
+
+# --- 1. Тести базової логіки та ланцюжків ---
 
 def test_valid_chain_email():
     """Тест успішного ланцюжка: валідний email."""
@@ -50,3 +52,45 @@ def test_none_input():
     # Перевіряємо, що подальші виклики не додають помилок
     v.is_email().is_not_empty()
     assert v.get_errors() == ["Value cannot be None"]
+
+# --- 2. Тести окремих методів з параметризацією ---
+
+@pytest.mark.parametrize("value, expected_valid, error_msg", [
+    (10, True, None),
+    (0, True, None),
+    (100, True, None),
+    (-1, False, "Value must be between 0 and 100"),
+    (101, False, "Value must be between 0 and 100"),
+])
+def test_is_in_range(value, expected_valid, error_msg):
+    """Параметризований тест для is_in_range."""
+    v = Validator(value).is_in_range(0, 100)
+    assert v.is_valid() is expected_valid
+    if not expected_valid:
+        assert v.get_errors() == [error_msg]
+
+@pytest.mark.parametrize("password, expected_valid, contains_error", [
+    ("P@ssword123", True, None),
+    ("P@s1", False, "at least 8 characters"),
+    ("p@ssword123", False, "one uppercase letter"),
+    ("P@SSWORD123", False, "one lowercase letter"),
+    ("P@sswordABC", False, "one digit"),
+    ("Password123", False, "one special symbol"),
+    ("weak", False, "at least 8 characters"), # Тут спрацює декілька помилок
+])
+def test_is_strong_password(password, expected_valid, contains_error):
+    """Параметризований тест для is_strong_password."""
+    v = Validator(password).is_strong_password()
+    assert v.is_valid() is expected_valid
+    if not expected_valid:
+        assert contains_error in v.get_errors()[0]
+
+def test_password_multiple_failings():
+    """Тест паролю, що не проходить декілька перевірок одночасно."""
+    v = Validator("weak").is_strong_password()
+    assert v.is_valid() is False
+    error = v.get_errors()[0]
+    assert "at least 8 characters" in error
+    assert "one uppercase letter" in error
+    assert "one digit" in error
+    assert "one special symbol" in error
