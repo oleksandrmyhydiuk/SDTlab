@@ -1,0 +1,52 @@
+import pytest
+from validator_v2 import Validator
+
+def test_valid_chain_email():
+    """Тест успішного ланцюжка: валідний email."""
+    v = Validator("test@example.com").is_not_empty().is_email()
+    assert v.is_valid() is True
+    assert v.get_errors() == []
+
+def test_valid_chain_number():
+    """Тест успішного ланцюжка: валідне число."""
+    v = Validator(10).is_in_range(5, 15)
+    assert v.is_valid() is True
+    assert v.get_errors() == []
+
+def test_chain_fail_at_first_step():
+    """Тест ланцюжка, що провалюється на першому кроці."""
+    v = Validator("  ").is_not_empty().is_email()
+    assert v.is_valid() is False
+    assert v.get_errors() == ["Value cannot be empty or whitespace"]
+
+def test_chain_fail_at_second_step():
+    """Тест ланцюжка, що провалюється на другому кроці."""
+    v = Validator("not-an-email").is_not_empty().is_email()
+    assert v.is_valid() is False
+    assert v.get_errors() == ["Invalid email format"]
+
+def test_chain_multiple_errors():
+    """Тест ланцюжка, що збирає декілька помилок."""
+    # "not-an-email" також не проходить is_strong_password
+    v = Validator("not-an-email").is_email().is_strong_password()
+    assert v.is_valid() is False
+    assert len(v.get_errors()) == 2
+    assert "Invalid email format" in v.get_errors()
+    assert "Password is not strong" in v.get_errors()[1]
+
+def test_stop_validation_on_type_error():
+    """Тест: валідація має зупинитись, якщо тип невірний."""
+    v = Validator(12345).is_not_empty().is_email()
+    assert v.is_valid() is False
+    # Має бути ТІЛЬКИ одна помилка про тип
+    assert v.get_errors() == ["Value must be of type str, got int"]
+
+def test_none_input():
+    """Тест: валідація на None."""
+    v = Validator(None)
+    assert v.is_valid() is False
+    assert v.get_errors() == ["Value cannot be None"]
+    
+    # Перевіряємо, що подальші виклики не додають помилок
+    v.is_email().is_not_empty()
+    assert v.get_errors() == ["Value cannot be None"]
