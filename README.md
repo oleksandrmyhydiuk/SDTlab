@@ -19,7 +19,7 @@ It is a small but powerful `Validator` class in Python, designed for validating 
 ### Code Example:
 
 ```python
-from validator_v2 import Validator
+from validator import Validator
 
 # --- Example 1: Successful Validation ---
 v1 = Validator("test@example.com").is_not_empty().is_email()
