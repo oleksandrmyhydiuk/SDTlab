@@ -71,8 +71,3 @@ pip install pytest
 pytest
 ```
 
-## 📚 Documentation
-
-Detailed API documentation is automatically generated using Doxygen + doxypypy and published via GitHub Pages.
-
-**[View Live Documentation](https://oleksandrmyhydiuk.github.io/SDTlab/)**
