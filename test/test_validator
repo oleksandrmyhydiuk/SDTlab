@@ -1,0 +1,177 @@
+import pytest
+from validator import Validator
+
+# --- 1. Base Logic and Chaining Tests ---
+
+def test_valid_chain_email():
+    """Test successful chain: valid email."""
+    v = Validator("test@example.com").is_not_empty().is_email()
+    assert v.is_valid() is True
+    assert v.get_errors() == []
+
+def test_valid_chain_number():
+    """Test successful chain: valid number."""
+    v = Validator(10).is_in_range(5, 15)
+    assert v.is_valid() is True
+    assert v.get_errors() == []
+
+def test_chain_fail_at_first_step():
+    """Test chain failing at the first step."""
+    v = Validator("  ").is_not_empty().is_email()
+    assert v.is_valid() is False
+    assert any("Value cannot be empty" in e for e in v.get_errors())
+
+def test_chain_fail_at_second_step():
+    """Test chain failing at the second step."""
+    v = Validator("not-an-email").is_not_empty().is_email()
+    assert v.is_valid() is False
+    assert any("Invalid email format" in e for e in v.get_errors())
+
+def test_chain_multiple_errors():
+    """Test chain that collects multiple errors."""
+    v = Validator("not-an-email").is_email().is_strong_password()
+    assert v.is_valid() is False
+    assert len(v.get_errors()) >= 2
+    assert any("Invalid email format" in e for e in v.get_errors())
+    assert any("Password is not strong" in e for e in v.get_errors())
+
+def test_stop_validation_on_type_error():
+    """Test: validation should stop if type is incorrect."""
+    v = Validator(12345).is_not_empty().is_email()
+    assert v.is_valid() is False
+    assert len(v.get_errors()) == 1
+    assert any("Value must be of type str" in e for e in v.get_errors())
+
+def test_none_input():
+    """Test: validation on None."""
+    v = Validator(None)
+    assert v.is_valid() is False
+    assert len(v.get_errors()) == 1
+    assert any("Value cannot be None" in e for e in v.get_errors())
+    
+    v.is_email().is_not_empty()
+    assert len(v.get_errors()) == 1, "Further validations should not add more errors"
+
+# --- 2. Parametrized Tests for Individual Methods ---
+
+@pytest.mark.parametrize("value, expected_valid", [
+    (10, True),
+    (0, True),
+    (100, True),
+    (-1, False),
+    (101, False),
+])
+def test_is_in_range(value, expected_valid):
+    """Parametrized test for is_in_range."""
+    v = Validator(value).is_in_range(0, 100)
+    assert v.is_valid() is expected_valid
+    if not expected_valid:
+        assert any("must be between 0 and 100" in e for e in v.get_errors())
+
+@pytest.mark.parametrize("password, expected_valid, contains_error", [
+    ("P@ssword123", True, None),
+    ("P@s1", False, "at least 8 characters"),
+    ("p@ssword123", False, "one uppercase letter"),
+    ("P@SSWORD123", False, "one lowercase letter"),
+    ("P@sswordABC", False, "one digit"),
+    ("Password123", False, "one special symbol"),
+    ("weak", False, "at least 8 characters"), # Multiple errors will trigger here
+])
+def test_is_strong_password(password, expected_valid, contains_error):
+    """Parametrized test for is_strong_password."""
+    v = Validator(password).is_strong_password()
+    assert v.is_valid() is expected_valid
+    if not expected_valid:
+        assert len(v.get_errors()) > 0
+        assert any(contains_error in e for e in v.get_errors())
+
+def test_password_multiple_failings():
+    """Test password that fails multiple checks at once."""
+    v = Validator("weak").is_strong_password()
+    assert v.is_valid() is False
+    errors = v.get_errors()
+    assert len(errors) > 0
+    combined_errors = " ".join(errors)
+    
+    assert "at least 8 characters" in combined_errors
+    assert "one uppercase letter" in combined_errors
+    assert "one digit" in combined_errors
+    assert "one special symbol" in combined_errors
+
+# --- 3. Custom Message Tests ---
+
+def test_custom_error_message_is_not_empty():
+    """Test: check custom error message."""
+    custom_msg = "Email є обов'язковим полем" # "Email is a required field"
+    v = Validator("").is_not_empty(message=custom_msg)
+    assert v.is_valid() is False
+    assert v.get_errors() == [custom_msg]
+
+def test_custom_error_message_is_phone():
+    """Test: custom message for a method that uses another method."""
+    custom_msg = "Введіть коректний номер +380" # "Enter a correct +380 number"
+    v = Validator("12345").is_phone(country_code="+380", message=custom_msg)
+    assert v.is_valid() is False
+    assert v.get_errors() == [custom_msg]
+
+def test_custom_error_message_is_email_domain():
+    """Test: custom message for domain check."""
+    custom_msg = "Дозволені лише корпоративні адреси" # "Only corporate addresses are allowed"
+    v = Validator("user@gmail.com").is_email(required_domain="corp.com", message=custom_msg)
+    assert v.is_valid() is False
+    assert v.get_errors() == [custom_msg]
+    
+# --- 4. Feature Tests ---
+
+def test_is_phone_with_specific_country_code_pass():
+    """Test: valid number with specified country code (+48)"""
+    v = Validator("+48123456789").is_phone(country_code="+48")
+    assert v.is_valid() is True
+
+def test_is_phone_with_specific_country_code_fail():
+    """Test: invalid number (different code)"""
+    v = Validator("+1123456789").is_phone(country_code="+48")
+    assert v.is_valid() is False
+    assert any("must start with +48" in e for e in v.get_errors())
+
+def test_is_phone_with_specific_code_fail_digits():
+    """Test: code is correct, but followed by letters"""
+    v = Validator("+380testtest").is_phone(country_code="+380")
+    assert v.is_valid() is False
+    assert any("must start with +380" in e for e in v.get_errors())
+
+def test_is_phone_generic_pass():
+    """Test: valid number (general format) without specified code"""
+    v = Validator("+1234567890123").is_phone()  # No country code
+    assert v.is_valid() is True
+
+def test_is_phone_generic_fail_no_plus():
+    """Test: invalid number (general format) - no '+'"""
+    v = Validator("123456789").is_phone()  # No country code
+    assert v.is_valid() is False
+    assert any("Invalid phone format" in e for e in v.get_errors())
+
+def test_is_email_with_required_domain_pass():
+    """Test: valid email with correct domain"""
+    v = Validator("user@mycompany.com").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is True
+
+def test_is_email_with_required_domain_fail():
+    """Test: valid email, but incorrect domain"""
+    v = Validator("user@other.com").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is False
+    assert any("must be from domain @mycompany.com" in e for e in v.get_errors())
+
+def test_is_email_with_required_domain_case_insensitive():
+    """Test: domain check is case-insensitive"""
+    v = Validator("user@MYCOMPANY.COM").is_email(required_domain="mycompany.com")
+    assert v.is_valid() is True
+    
+    v2 = Validator("user@mycompany.com").is_email(required_domain="MYCOMPANY.COM")
+    assert v2.is_valid() is True
+
+def test_is_email_required_domain_but_invalid_format():
+    """Test: email is invalid, domain check should not trigger"""
+    v = Validator("usermycompany.com").is_email(required_domain="mycompany.com")
+    assert len(v.get_errors()) == 1
+    assert any("Invalid email format" in e for e in v.get_errors())
