@@ -1,0 +1,29 @@
+# Назва вашого проєкту
+PROJECT_NAME           = "Python Validator Docs"
+
+# Вказуємо Doxygen, що це Python-проєкт
+OPTIMIZE_FOR_PY        = YES
+
+# Вказуємо, що шукати
+INPUT                  = .
+FILE_PATTERNS          = *.py
+RECURSIVE              = YES
+
+# Вмикаємо парсинг docstrings
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+# === Ключове налаштування для doxypypy ===
+# Вказуємо, що всі .py файли треба пропустити через фільтр
+FILTER_PATTERNS        = *.py=doxypypy
+
+# Вимикаємо вбудований парсер Doxygen для Python,
+# щоб він не конфліктував з doxypypy
+PYTHON_DOCSTRING       = NO
+
+# Куди складати результат
+OUTPUT_DIRECTORY       = docs_doxygen
+
+# Генерувати HTML
+GENERATE_HTML          = YES
