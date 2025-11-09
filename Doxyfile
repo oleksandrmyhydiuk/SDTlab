@@ -1,0 +1,24 @@
+# Вкажіть назву вашого проєкту
+PROJECT_NAME           = "Python Validator Docs"
+
+# Вкажіть Doxygen шукати файли в поточній папці
+INPUT                  = .
+
+# Вкажіть, що шукати потрібно файли з розширенням .py
+FILE_PATTERNS          = *.py
+
+# Вкажіть Doxygen шукати файли рекурсивно (у всіх підпапках)
+RECURSIVE              = YES
+
+# Оптимізація для Python (важливо!)
+OPTIMIZE_FOR_PY        = YES
+
+# Вказуємо Doxygen, що всі .py файли треба "фільтрувати" через doxypypy
+FILTER_PATTERNS        = *.py=doxypypy
+
+# Вимикаємо вбудований парсер Doxygen для Python,
+# щоб він не конфліктував з doxypypy (важливо!)
+PYTHON_DOCSTRING       = NO
+
+# Куди складати згенерований HTML
+OUTPUT_DIRECTORY       = docs_doxygen
