@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - master
+      - feature/docs-ci
   
   # Дозволяє запускати вручну з вкладки Actions
   workflow_dispatch:
