@@ -4,7 +4,7 @@ This project is part of a lab assignment for the "Software Development Tools" co
 
 It is a small but powerful `Validator` class in Python, designed for validating input data. Unlike a simple set of functions, this validator uses an object-oriented approach, collects errors, and supports method chaining.
 
-## 🚀 Key Features
+## Key Features
 
   * **Method Chaining:** Validation methods can be called one after another on the same object.
   * **Error Collection:** The validator collects a comprehensive list of all issues instead of stopping
@@ -14,7 +14,7 @@ It is a small but powerful `Validator` class in Python, designed for validating 
     country code.
   * **Custom Messages:** Allows specifying custom error messages for each validation rule.
 
-## 🛠️ How to Use
+## How to Use
 
 ### Code Example:
 
@@ -48,7 +48,7 @@ v4_phone = Validator("+380123456789").is_phone(country_code="+380")
 print(v4_phone.is_valid()) # Outputs: True
 ```
 
-## 📋 Available Validation Methods
+## Available Validation Methods
 
   * `.is_type(expected_type, [message])`: Checks if the value is an instance of `expected_type`.
   * `.is_not_empty([message])`: Checks if a string is not `None` and does not consist only of
@@ -60,7 +60,7 @@ print(v4_phone.is_valid()) # Outputs: True
   * `.matches_regex(pattern, [message])`: Checks the string against a provided regex pattern.
   * `.is_phone(country_code=None, [message])`: Checks a phone number. If `country_code` is set (e.g., `"+380"`), it enforces that prefix. If `None`, it checks for a generic `+...digits...` format.
 
-## 🧪 Testing
+## Testing
 
 The project includes a comprehensive unit test suite using `pytest`. The tests cover basic logic, edge cases, error handling, and the new validation features.
 
@@ -71,7 +71,7 @@ pip install pytest
 pytest
 ```
 
-## 📚 Documentation
+## Documentation
 
 Detailed API documentation is automatically generated using Doxygen + doxypypy and published via GitHub Pages.
 
