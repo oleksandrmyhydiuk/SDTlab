@@ -89,7 +89,7 @@ class Validator:
         if self._stop_validation:
             return self
 
-        if not isinstance(self.value, expected_type):
+        if (isinstance(self.value, bool) and expected_type is not bool) or not isinstance(self.value, expected_type):
             self._add_error(
                 message or f"Value must be of type {expected_type.__name__}, got {type(self.value).__name__}")
             self._stop_validation = True
@@ -155,10 +155,11 @@ class Validator:
             return self
 
         if required_domain:
+            clean_domain = required_domain.lstrip('@')
             try:
                 domain = self.value.split('@', 1)[1]
-                if domain.lower() != required_domain.lower():
-                    self._add_error(message or f"Email must be from domain @{required_domain}")
+                if domain.lower() != clean_domain.lower():
+                    self._add_error(message or f"Email must be from domain @{clean_domain}")
             except IndexError:
                 self._add_error(message or "Invalid email format, cannot check domain")
 
@@ -215,7 +216,8 @@ class Validator:
             return self
 
         if not re.match(pattern, self.value):
-            self._add_error(message or f"Value does not match pattern '{pattern}'")
+            pattern_str = pattern.pattern if isinstance(pattern, re.Pattern) else pattern
+            self._add_error(message or f"Value does not match pattern '{pattern_str}'")
         return self
 
     def is_phone(self, country_code: str | None = None, message: str | None = None):
