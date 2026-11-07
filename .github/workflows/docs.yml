@@ -1,0 +1,53 @@
+name: Deploy Doxygen Docs to GitHub Pages
+
+on:
+  # Запускати при пуші в головну гілку (main або master)
+  push:
+    branches:
+      - main
+      - master
+      - feature/docs-ci
+  
+  # Дозволяє запускати вручну з вкладки Actions
+  workflow_dispatch:
+
+# Дозволи для GITHUB_TOKEN для деплою на gh-pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Doxygen and doxypypy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+          pip install doxypypy
+
+      - name: Generate Doxygen documentation
+        run: |
+          # Запускаємо doxygen. Він згенерує HTML у папку,
+          # вказану в Doxyfile (OUTPUT_DIRECTORY = docs_doxygen)
+          doxygen Doxyfile
+        
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Завантажуємо вміст згенерованої HTML-папки
+          path: ./docs_doxygen/html 
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
