@@ -4,14 +4,20 @@ PROJECT_NAME           = "Python Validator Docs"
 # Вкажіть Doxygen шукати файли в поточній папці
 INPUT                  = .
 
-# Вкажіть, що шукати потрібно файли з розширенням .py
-FILE_PATTERNS          = *.py
+# Використовувати головний README.md як титульну сторінку документації
+USE_MDFILE_AS_MAINPAGE = README.md
+
+# Вкажіть, що шукати потрібно файли з розширенням .py та .md
+FILE_PATTERNS          = *.py *.md
 
 # Вкажіть Doxygen шукати файли рекурсивно (у всіх підпапках)
 RECURSIVE              = YES
 
-# Оптимізація для Python (важливо!)
-OPTIMIZE_FOR_PY        = YES
+# Виключаємо службові директорії та віртуальне середовище
+EXCLUDE_PATTERNS       = */.venv/* */venv/* */__pycache__/* */.pytest_cache/* */.git/* */.idea/* */docs_doxygen/*
+
+# Оптимізація виводу для Python/Java
+OPTIMIZE_OUTPUT_JAVA   = YES
 
 # Вказуємо Doxygen, що всі .py файли треба "фільтрувати" через doxypypy
 FILTER_PATTERNS        = *.py=doxypypy
@@ -19,6 +25,9 @@ FILTER_PATTERNS        = *.py=doxypypy
 # Вимикаємо вбудований парсер Doxygen для Python,
 # щоб він не конфліктував з doxypypy (важливо!)
 PYTHON_DOCSTRING       = NO
+
+# Вимикаємо генерацію LaTeX, оскільки використовується лише HTML для GitHub Pages
+GENERATE_LATEX         = NO
 
 # Куди складати згенерований HTML
 OUTPUT_DIRECTORY       = docs_doxygen

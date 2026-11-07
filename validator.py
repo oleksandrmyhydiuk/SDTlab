@@ -1,4 +1,4 @@
-"""
+"""!
 @file validator.py
 @brief Advanced validator class with support for method chaining.
 
@@ -16,8 +16,8 @@ EMAIL_REGEX = re.compile(
 
 
 class Validator:
-    """
-    Main class for performing validation on a single value.
+    """!
+    @brief Main class for performing validation on a single value.
 
     The validator is stateful. It collects errors in an internal list
     and supports method chaining.
@@ -35,8 +35,8 @@ class Validator:
     """
 
     def __init__(self, value):
-        """
-        Initializes the Validator with a value to check.
+        """!
+        @brief Initializes the Validator with a value to check.
 
         @param value (any): The value to be validated.
         """
@@ -51,32 +51,32 @@ class Validator:
             self._stop_validation = True
 
     def _add_error(self, message: str):
-        """
-        Private helper method to add an error to the internal list.
+        """!
+        @brief Private helper method to add an error to the internal list.
 
         @param message (str): The error message to add.
         """
         self.errors.append(message)
 
     def is_valid(self) -> bool:
-        """
-        Checks if the validation has passed.
+        """!
+        @brief Checks if the validation has passed.
 
         @return bool: True if no errors were collected, False otherwise.
         """
         return len(self.errors) == 0
 
     def get_errors(self) -> list[str]:
-        """
-        Retrieves the list of collected error messages.
+        """!
+        @brief Retrieves the list of collected error messages.
 
         @return list[str]: A list of all error messages.
         """
         return self.errors
 
     def is_type(self, expected_type: type, message: str | None = None):
-        """
-        Checks if the value is of the expected type.
+        """!
+        @brief Checks if the value is of the expected type.
 
         If the type is wrong, this sets a flag to stop further
         validations to prevent TypeErrors.
@@ -96,8 +96,8 @@ class Validator:
         return self
 
     def is_not_empty(self, message: str | None = None):
-        """
-        Checks that a string is not empty or just whitespace.
+        """!
+        @brief Checks that a string is not empty or just whitespace.
 
         Automatically performs an is_type(str) check first.
 
@@ -114,8 +114,8 @@ class Validator:
         return self
 
     def is_in_range(self, min_val: numbers.Number, max_val: numbers.Number, message: str | None = None):
-        """
-        Checks that a number is within a specific range (inclusive).
+        """!
+        @brief Checks that a number is within a specific range (inclusive).
 
         Automatically performs an is_type(numbers.Number) check first.
 
@@ -134,8 +134,8 @@ class Validator:
         return self
 
     def is_email(self, required_domain: str | None = None, message: str | None = None):
-        """
-        Checks if the string is a valid email.
+        """!
+        @brief Checks if the string is a valid email.
 
         If 'required_domain' is provided, it also checks if the email
         belongs to that specific domain (case-insensitive).
@@ -165,8 +165,8 @@ class Validator:
         return self
 
     def is_strong_password(self, min_len: int = 8, message: str | None = None):
-        """
-        Checks password complexity based on multiple criteria.
+        """!
+        @brief Checks password complexity based on multiple criteria.
 
         Criteria:
         - At least `min_len` characters.
@@ -202,8 +202,8 @@ class Validator:
         return self
 
     def matches_regex(self, pattern: str | re.Pattern, message: str | None = None):
-        """
-        Checks the string against a custom regex pattern.
+        """!
+        @brief Checks the string against a custom regex pattern.
 
         @param pattern (str | re.Pattern): The regex pattern to match.
         @param message (str, optional): Custom error message.
@@ -219,8 +219,8 @@ class Validator:
         return self
 
     def is_phone(self, country_code: str | None = None, message: str | None = None):
-        """
-        Checks a phone number.
+        """!
+        @brief Checks a phone number.
 
         If 'country_code' is set (e.g., '+380'), it enforces that prefix.
         If not, it checks for a generic E.164-like format (+...digits...).
