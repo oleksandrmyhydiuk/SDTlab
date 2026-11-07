@@ -12,7 +12,7 @@ Unlike procedural validation functions that fail on the first error or raise exc
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 - **Fluent Method Chaining:** Chain multiple validation rules sequentially on a single `Validator` instance.
 - **Comprehensive Error Collection:** Collects every validation failure across the chain instead of stopping at the first logical error.
@@ -23,7 +23,7 @@ Unlike procedural validation functions that fail on the first error or raise exc
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 SDTlab/
@@ -45,7 +45,7 @@ SDTlab/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -71,7 +71,9 @@ pip install pytest
 
 ---
 
-## 🛠️ Usage Examples
+## How to Use
+
+### Code Examples
 
 ```python
 from validator import Validator
@@ -111,7 +113,7 @@ print(v6.is_valid())      # True
 
 ---
 
-## 📋 API Reference
+## Available Validation Methods
 
 | Method | Parameters | Description |
 | :--- | :--- | :--- |
@@ -128,7 +130,7 @@ print(v6.is_valid())      # True
 
 ---
 
-## 🧪 Testing
+## Testing
 
 The project includes a comprehensive `pytest` suite in [`test/test_validator.py`](test/test_validator.py) (34 test cases using `@pytest.mark.parametrize`) covering:
 - Valid and invalid method chains
@@ -149,11 +151,11 @@ See [`test/README.md`](test/README.md) for a detailed overview of the testing st
 
 ---
 
-## 📚 Documentation (Doxygen & GitHub Pages)
+## Documentation
 
 API documentation is generated from Doxygen-annotated docstrings using **Doxygen** and **doxypypy**, and automatically deployed to GitHub Pages on push via [`.github/workflows/docs.yml`](.github/workflows/docs.yml).
 
-👉 **[View Live Documentation](https://oleksandrmyhydiuk.github.io/SDTlab/)**
+**[View Live Documentation](https://oleksandrmyhydiuk.github.io/SDTlab/)**
 
 To generate the documentation locally:
 
@@ -166,12 +168,12 @@ The generated HTML site will be placed in `docs_doxygen/html/index.html`.
 
 ---
 
-## 🔒 Security
+## Security
 
 Please review [`SECURITY.md`](SECURITY.md) for information on supported versions, security design principles, and how to report vulnerabilities responsibly.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** — see the [`LICENSE`](LICENSE) file for details.
