@@ -40,7 +40,7 @@ def test_is_strong_password(password, expected_valid, contains_error):
         assert contains_error in v.get_errors()[0]
 ```
 
-Thanks to this approach, the **20+ test functions** in the `test_validator_v2.py` file actually execute **over 30 unique test scenarios**, fully covering the validator's logic.
+Thanks to this approach, the **20+ test functions** in the `test/test_validator.py` file actually execute **over 30 unique test scenarios**, fully covering the validator's logic.
 
 ### ⚙️ How to Run Tests
 
@@ -52,3 +52,4 @@ Thanks to this approach, the **20+ test functions** in the `test_validator_v2.py
     ```bash
     pytest
     ```
+

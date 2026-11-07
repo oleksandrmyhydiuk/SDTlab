@@ -339,3 +339,27 @@ def test_is_email_required_domain_but_invalid_format():
     assert v.is_valid() is False
     assert len(v.get_errors()) == 1
     assert any("Invalid email format" in e for e in v.get_errors())
+
+
+def test_is_email_with_at_prefix_in_required_domain():
+    """
+    Tests that required_domain works whether or not it includes a leading '@' symbol.
+    """
+    v_pass = Validator("user@mycompany.com").is_email(required_domain="@mycompany.com")
+    assert v_pass.is_valid() is True
+
+    v_fail = Validator("user@other.com").is_email(required_domain="@mycompany.com")
+    assert v_fail.is_valid() is False
+    assert any("must be from domain @mycompany.com" in e for e in v_fail.get_errors())
+
+
+def test_boolean_rejected_for_numeric_range():
+    """
+    Tests that boolean values are not treated as numbers in .is_in_range() or .is_type(int).
+    """
+    v_range = Validator(True).is_in_range(0, 10)
+    assert v_range.is_valid() is False
+    assert any("got bool" in e for e in v_range.get_errors())
+
+    v_bool = Validator(True).is_type(bool)
+    assert v_bool.is_valid() is True
